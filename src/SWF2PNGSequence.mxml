@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:logic="logic.*" width="514" height="602"
+					   showStatusBar="false" frameRate="30">
+	<fx:Declarations>
+		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
+		<logic:SWF2PNGSequenceLogic id="swf2pngLogic"/>
+		<s:ArrayList id="fileURLData">
+		</s:ArrayList>
+		<s:DateTimeFormatter dateTimePattern="[yyyy/MM/dd hh:mm:ss] " id="dateTimeFormatter">
+			
+		</s:DateTimeFormatter>
+	</fx:Declarations>
+	<s:Image id="imageHeader" x="1" y="13" source="@Embed('image/swf2pngheader.png')"/>
+	<s:Panel id="panel_Fileload" x="55" y="242" width="404" height="263" borderVisible="true"
+			 dropShadowVisible="true" textAlign="left" title="SWFファイルを選択">
+		<s:Label y="15" horizontalCenter="0" text="変換するSWFファイルをここにドラッグしてください。"/>
+		<mx:DataGrid y="72" width="321" height="104" alternatingItemColors="[#FFFFFF, #EEEEEE]" dataProvider="{fileURLData}" horizontalCenter="0" variableRowHeight="true" dragEnabled="true"
+					 id="grid_fileList" dragMoveEnabled="true" dropEnabled="true">
+			<mx:columns>
+				<mx:DataGridColumn width="50" dataField="status" headerText="状態"/>
+				<mx:DataGridColumn width="150"  dataField="fileName" headerText="ファイル名"/>
+				<mx:DataGridColumn dataField="filePath" headerText="パス" visible="false"/>
+			</mx:columns>
+
+		</mx:DataGrid>
+		<s:Button id="bt_selectFileClear" x="41" y="185" label="選択したキューを削除"/>
+		<s:Button id="bt_fileClear" x="222" y="185" label="すべてのキューを削除"/>
+		<s:HGroup y="35" width="270" height="23" horizontalAlign="center" horizontalCenter="0" verticalAlign="middle">
+			<s:Label text="または"/>
+			<s:Button id="bt_fileSelect" label="ファイルダイアログから追加"/>
+		</s:HGroup>
+	</s:Panel>
+	<s:HGroup x="56" y="534" width="402" height="42" horizontalAlign="center">
+		<s:Button id="bt_Option" x="18" width="96" height="25" label="オプション" chromeColor="#E7E7E7"
+				  fontSize="12"/>
+		<s:Spacer x="112" width="134" height="10"/>
+		<s:Button width="124" height="37" label="変換開始" fontSize="18" id="bt_fileConvert"/>
+	</s:HGroup>
+	<s:Label x="56" y="580" color="#5E5E5E"
+			 text="SWF2PNGSequence Version 0.9.3 © hush_in, 2012  http://flatv.fdempa.com/"/>
+</s:WindowedApplication>

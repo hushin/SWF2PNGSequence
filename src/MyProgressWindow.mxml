@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" title="SWFからPNGシーケンスを書きだしています..."
+		 creationComplete="onCreationCompleteHandler()">
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+
+			protected function onCreationCompleteHandler():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
+	</fx:Declarations>
+	<mx:ProgressBar id="progressBar" x="65" y="83" width="267" height="38" label="書き出しなう" mode="manual"/>
+	<s:Button x="164" y="201" label="キャンセル" id="button"/>
+	<s:Label id="labelTime" x="65" y="145" text="変換中..." textAlign="left"/>
+</s:Panel>

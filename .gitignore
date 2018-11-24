@@ -1,0 +1,16 @@
+### https://raw.github.com/github/gitignore/8c9b77cb5c85f6464c0bb31abdf4cfcfdf6833bb/Actionscript.gitignore
+
+# Build and Release Folders
+bin/
+bin-debug/
+bin-release/
+
+# Other files and folders
+.settings/
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
+
+*.p12
+*.air

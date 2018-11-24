@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="512" title="オプション" creationPolicy="all">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectProxy;
+			[Bindable]
+			public var sizeOptions:ArrayCollection = new ArrayCollection([new ObjectProxy({label: "512x384（ニコニコ動画用）", data: OptionValue.SIZE_512X384}),
+				new ObjectProxy({label: "640x480", data: OptionValue.SIZE_640X480}),
+				new ObjectProxy({label: "648x486（ニコニコ動画用）", data: OptionValue.SIZE_648X486}),
+				new ObjectProxy({label: "--------", data: OptionValue.SIZE_NONE}),
+				new ObjectProxy({label: "640x360（ニコニコ動画用）", data: OptionValue.SIZE_640X360}),
+				new ObjectProxy({label: "864x486（ニコニコ動画用）", data: OptionValue.SIZE_864X486}),
+				new ObjectProxy({label: "1280x720（720p）", data: OptionValue.SIZE_1280X720}),
+				new ObjectProxy({label: "1920x1080（1080p）", data: OptionValue.SIZE_1920X1080}),
+				new ObjectProxy({label: "--------", data: OptionValue.SIZE_NONE}),
+				new ObjectProxy({label: "カスタム", data: OptionValue.SIZE_COSTUME})]);
+
+			protected function directorySelect(event:MouseEvent):void
+			{
+				var directory:File = File.documentsDirectory;
+				directory.browseForDirectory("フォルダを選択してください。");
+				directory.addEventListener(Event.SELECT, directorySelected);
+			}
+
+			protected function directorySelected(event:Event):void
+			{
+				var directory:File = event.target as File;
+				txtOutputPath.text = directory.url;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
+		<s:RadioButtonGroup id="rgCaptureSize"/>
+		<s:RadioButtonGroup id="rgCaptureAspect" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}"/>
+		<s:RadioButtonGroup id="rgCaptureFrame"/>
+		<s:RadioButtonGroup id="rgOutputPath"/>
+		<s:RadioButtonGroup id="rgOutputFileName"/>
+		<s:RadioButtonGroup id="rgBackGround"/>
+		<s:RadioButtonGroup id="rgOutputMethod"/>
+	</fx:Declarations>
+	<mx:TabNavigator x="8" y="6" width="380" height="463" creationPolicy="all">
+		<s:NavigatorContent width="100%" height="100%" label="出力先">
+			<s:Panel x="10" y="10" width="358" height="213" dropShadowVisible="false" title="フォルダ">
+				<s:VGroup x="10" y="45">
+					<s:RadioButton label="SWFファイルと同じフォルダ" groupName="rgOutputPath" selected="true" value="{OptionValue.PATH_SAME}"/>
+					<s:RadioButton label="デスクトップ" groupName="rgOutputPath" value="{OptionValue.PATH_DESKTOP}"/>
+					<s:RadioButton label="任意のフォルダ" groupName="rgOutputPath" value="{OptionValue.PATH_SELECTABLE}"/>
+					<s:HGroup width="175" horizontalAlign="center" verticalAlign="top">
+						<s:Button label="フォルダを選択" enabled="{rgOutputPath.selectedValue == OptionValue.PATH_SELECTABLE}" click="directorySelect(event)"/>
+					</s:HGroup>
+					<s:HGroup width="320" horizontalAlign="right">
+						<s:TextInput width="285" editable="false" enabled="{rgOutputPath.selectedValue == OptionValue.PATH_SELECTABLE}"
+									 id="txtOutputPath"/>
+					</s:HGroup>
+				</s:VGroup>
+				<s:Label x="10" y="10" text="指定したフォルダ内に新しいフォルダが作成され、&#xd;その中にPNGシーケンスが作成されます。"/>
+			</s:Panel>
+			<s:Panel x="9" y="241" width="358" height="128" dropShadowVisible="false" title="ファイル名">
+				<s:VGroup x="6" y="9">
+					<s:RadioButton label="接頭辞+連番" groupName="rgOutputFileName" selected="true" value="{OptionValue.FILENAME_SELECTABLE}"/>
+					<s:HGroup width="207" height="28" horizontalAlign="center" verticalAlign="middle">
+						<s:Label text="接頭辞："/>
+						<s:TextInput enabled="{rgOutputFileName.selectedValue == OptionValue.FILENAME_SELECTABLE}" text="pic" id="txtHeadFileName"/>
+					</s:HGroup>
+					<s:RadioButton label="SWFファイル名+連番" groupName="rgOutputFileName" value="{OptionValue.FILENAME_SAME}"/>
+				</s:VGroup>
+			</s:Panel>
+		</s:NavigatorContent>
+		<s:NavigatorContent width="100%" height="100%" label="サイズ">
+			<s:HGroup x="10" y="10" width="200" horizontalAlign="left" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_03.png')"/>
+				<s:RadioButton label="元のサイズ" groupName="rgCaptureSize" selected="true" value="{OptionValue.SIZE_DEFAULT}"/>
+			</s:HGroup>
+			<s:HGroup x="9" y="65" width="358" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_06.png')"/>
+				<s:RadioButton label="元のサイズから倍率指定" groupName="rgCaptureSize" value="{OptionValue.SIZE_SCALE}"/>
+				<s:HGroup y="9" width="124" height="37" horizontalAlign="right" verticalAlign="middle">
+					<s:Label text="倍率:"/>
+					<s:TextInput id="txtCaptureScale" x="61" width="46" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SCALE}" text="100"/>
+					<s:Label text="%"/>
+				</s:HGroup>
+			</s:HGroup>
+			<s:VGroup x="83" y="120" width="285">
+				<s:HGroup horizontalAlign="left">
+					<s:RadioButton label="サイズを指定" groupName="rgCaptureSize" value="{OptionValue.SIZE_SELECTABLE}"/>
+					<s:ComboBox id="cmbSizeOptions" x="108" width="188" dataProvider="{sizeOptions}"
+								enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}" prompt="選択してください。">
+						<s:layout>
+							<s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="8"/>
+						</s:layout>
+					</s:ComboBox>
+				</s:HGroup>
+
+				<s:HGroup width="281" horizontalAlign="right">
+					<s:HGroup horizontalAlign="right" verticalAlign="middle">
+						<s:Label text="幅:"/>
+						<s:TextInput id="txtCaptureWidth" x="70" width="57"
+									 enabled="{cmbSizeOptions.selectedIndex == -1 ? false: cmbSizeOptions.selectedItem.data == OptionValue.SIZE_COSTUME}"
+									 text="640"/>
+						<s:Label text="px"/>
+					</s:HGroup>
+					<s:Spacer width="10" height="10"/>
+					<s:HGroup height="23" horizontalAlign="right" verticalAlign="middle">
+						<s:Label text="高さ:"/>
+						<s:TextInput id="txtCaptureHeight" width="57"
+									 enabled="{cmbSizeOptions.selectedIndex == -1 ? false: cmbSizeOptions.selectedItem.data == OptionValue.SIZE_COSTUME}"
+									 text="480"/>
+						<s:Label text="px"/>
+					</s:HGroup>
+				</s:HGroup>
+			</s:VGroup>
+			<s:HGroup x="10" y="183" width="336" horizontalAlign="left" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_06.png')" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}"/>
+				<s:RadioButton label="アスペクト比を保持（サイズ内に納める）" groupName="rgCaptureAspect" selected="true" value="{OptionValue.ASPECT_DEFAULT}"/>
+			</s:HGroup>
+			<s:HGroup x="10" y="243" width="336" horizontalAlign="left" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_13.png')" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}"/>
+				<s:RadioButton label="アスペクト比を保持（黒ベタ追加）" groupName="rgCaptureAspect" value="{OptionValue.ASPECT_BLACK}"/>
+			</s:HGroup>
+			<s:HGroup x="10" y="302" width="357" horizontalAlign="left" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_08.png')" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}"/>
+				<s:RadioButton label="アスペクト比を無視（出力サイズに変形）" groupName="rgCaptureAspect" value="{OptionValue.ASPECT_STRETCH}"/>
+			</s:HGroup>
+			<s:HGroup x="10" y="361" width="358" horizontalAlign="left" verticalAlign="middle">
+				<s:Image source="@Embed('image/ui_11.png')" enabled="{rgCaptureSize.selectedValue == OptionValue.SIZE_SELECTABLE}"/>
+				<s:VGroup y="80">
+					<s:RadioButton label="サイズ固定・倍率指定（上級者向け）" groupName="rgCaptureAspect" value="{OptionValue.ASPECT_SELECTABLE}"/>
+					<s:HGroup width="255" horizontalAlign="right">
+						<s:HGroup horizontalAlign="right" verticalAlign="middle">
+							<s:Label text="幅:"/>
+							<s:TextInput id="txtScaleWidth" x="70" width="57" text="100"
+										 enabled="{rgCaptureAspect.selectedValue == OptionValue.ASPECT_SELECTABLE}" click="directorySelect(event)"/>
+							<s:Label text="%"/>
+						</s:HGroup>
+						<s:Spacer width="10" height="10"/>
+						<s:HGroup height="23" horizontalAlign="right" verticalAlign="middle">
+							<s:Label text="高さ:"/>
+							<s:TextInput id="txtScaleHeight" width="57" text="100"
+										 enabled="{rgCaptureAspect.selectedValue == OptionValue.ASPECT_SELECTABLE}"/>
+							<s:Label text="%"/>
+						</s:HGroup>
+					</s:HGroup>
+				</s:VGroup>
+			</s:HGroup>
+		</s:NavigatorContent>
+		<s:NavigatorContent width="100%" height="100%" label="フレーム範囲・背景色">
+			<s:Panel x="10" y="10" width="358" height="138" dropShadowVisible="false" title="フレーム範囲">
+				<s:VGroup x="12" y="15" width="334">
+					<s:RadioButton label="すべてのフレームを書き出し" groupName="rgCaptureFrame" selected="true" value="{OptionValue.FRAME_ALL}"/>
+					<s:HGroup height="53">
+						<s:RadioButton label="フレーム範囲指定" groupName="rgCaptureFrame" value="{OptionValue.FRAME_SELECT}"/>
+						<s:VGroup width="150" height="47" horizontalAlign="right">
+							<s:HGroup height="23" horizontalAlign="right" verticalAlign="middle">
+								<s:Label text="Start:"/>
+								<s:TextInput id="txtStartFrame" width="72" enabled="{rgCaptureFrame.selectedValue == OptionValue.FRAME_SELECT}" text="1"/>
+							</s:HGroup>
+							<s:HGroup height="23" horizontalAlign="right" verticalAlign="middle">
+								<s:Label text="End:"/>
+								<s:TextInput id="txtEndFrame" width="72" enabled="{rgCaptureFrame.selectedValue == OptionValue.FRAME_SELECT}" text="100"/>
+							</s:HGroup>
+						</s:VGroup>
+					</s:HGroup>
+				</s:VGroup>
+			</s:Panel>
+			<s:Panel x="9" y="156" width="358" height="125" dropShadowVisible="false" title="背景色">
+				<s:VGroup x="10" y="10">
+					<s:RadioButton label="白色" groupName="rgBackGround" selected="true" value="{OptionValue.BACK_WHITE}"/>
+					<s:RadioButton label="黒色" groupName="rgBackGround" value="{OptionValue.BACK_BLACK}"/>
+					<s:RadioButton label="透明（透過PNG・素材作成時にオススメ）" groupName="rgBackGround" value="{OptionValue.BACK_TRANSPARENT}"/>
+				</s:VGroup>
+			</s:Panel>
+<!--			<s:Panel x="10" y="289" width="358" height="131" borderVisible="true"
+					 dropShadowVisible="false" title="変換方法">
+				<s:VGroup x="10" y="10">
+					<s:RadioButton label="通常（変換速度早め）" groupName="rgOutputMethod" selected="true" value="{OptionValue.METHOD_NORMAL}"/>
+					<s:RadioButton label="特別（変換速度遅め、通常では変換できない場合に選択）" groupName="rgOutputMethod" value="{OptionValue.METHOD_SLOW}"/>
+				</s:VGroup>
+			</s:Panel>-->
+		</s:NavigatorContent>
+		<s:NavigatorContent width="100%" height="100%" label="ログ">
+			<s:TextArea id="logArea" x="10" y="10" width="358" height="410"/>
+		</s:NavigatorContent>
+	</mx:TabNavigator>
+</s:TitleWindow>
